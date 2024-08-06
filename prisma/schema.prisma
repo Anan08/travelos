@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  email String  
+}
+
+model Packages {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  desc String
+  prices Int
+}
+
+model Hotels {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  desc String
+  image String
+  prices Int
+}
+
+model PackageTransaction {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  packageId String @db.ObjectId
+  price Int
+}
