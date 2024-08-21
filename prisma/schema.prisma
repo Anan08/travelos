@@ -13,10 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  email String  
-}
 
 model Packages {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
@@ -32,10 +28,23 @@ model Hotels {
   image String
   prices Int
 }
+model HotelTransaction {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String
+  hotelId String
+  image String
+  amount Int
+  prices Int
+  status String
+  code String
+}
 
 model PackageTransaction {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId
-  packageId String @db.ObjectId
-  price Int
+  userId String 
+  packageId String 
+  amount Int
+  prices Int
+  status String
+  code String
 }

@@ -1,62 +1,79 @@
 'use client'
-import Header from "./component/ui/NavBar";
-import Hero from "./component/ui/Hero";
+
+import Hero from "./component/ui/Hero/Hero";
 import Link from "next/link";
-import Image from "next/image";
-import { Input } from "@headlessui/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { SessionProvider, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
+import Pagination from "./component/ui/Pagination/Pagination";
 
 const DummyData = [
   {
     id: "1",
     name: "Bali's cottage",
     desc: "Bali's cottage for rent",
-    price: 2500000,
-    image: "https://images.unsplash.com/photo-1570127828934-c60aa3e1e5af?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    image: "https://plus.unsplash.com/premium_photo-1669863280566-cffeb0fc13c5?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   },
   {
     id: "2",
     name: "lorem",
     desc: "lorem10",
-    price: 2500000,
-    image: "https://images.unsplash.com/photo-1579297206620-c410c4af42e4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1773&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   },
   {
     id: "3",
     name: "lorem",
     desc: "lorem10",
-    price: 2500000,
-    image: "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    image: "https://images.unsplash.com/photo-1723883973654-474fd909d3b7?q=80&w=1885&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   },
   {
     id: "4",
     name: "lorem",
     desc: "lorem10",
-    price: 2500000,
-    image: "https://images.unsplash.com/photo-1579297206620-c410c4af42e4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  },
-  {
-    id: "5",
-    name: "lorem",
-    desc: "lorem10",
-    price: 2500000,
-    image: "https://images.unsplash.com/photo-1579297206620-c410c4af42e4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    image: "https://images.unsplash.com/photo-1723910039057-7e6a616b6e86?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   }
 ]
 
+interface dataProps {
+  id:string,
+  title:string,
+  desc:string,
+  prices:number
+}
+
+
+
 export default function Home() {
+
   const session = useSession();
+  const [data, setData] = useState<dataProps[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useState(4);
+
+  const lastPostIndex = currentPage * postsPerPage;
+  const firstPostIndex = lastPostIndex - postsPerPage;
+  const currentPost = data.slice(firstPostIndex, lastPostIndex)
+
+  useEffect(() => {
+      
+    fetch('/api/packages', {
+        method: 'GET'
+      }).then((data) => {
+        return data.json()
+      }).then((response) => {
+        setData(response.data)
+      })
+  }, [currentPage])
+  
 
   return (
-    <main className="p-1">
+    <main className="">
       <Hero/>
 
       <div>
         {/* {session?.data?.user?.name} */}
       </div>
-      <div className="pt-20 p-6 mx-auto flex justify-between ">
-        <div className="flex">
+      {/* <div className="pt-[100px] mx-auto flex justify-between">
+        <div className="flex p-6">
           <div>
             <h1 className="p-2 font-light text-gray-800">Search place..</h1>
             <Input type="text" className="shadow-md bg-white w-auto border p-2 rounded-xl" placeholder="Try London..." data-focus data-hover/>
@@ -77,29 +94,60 @@ export default function Home() {
           
         </div>
         
+      </div> */}
+
+      <div className="pt-[30px]">
+        <div>
+          <h1 className="font-bold p-6 text-xl">Enchance Your Trip!</h1>
+        </div>
+        <div className="grid grid-cols-4 justify-evenly p-6 gap-4">
+          {DummyData.map((pkg) => {
+            return (
+              <div key={pkg.id}className="rounded-md shadow-md w-64 h-72 ">
+                <Link href="#">
+                  <div className="absolute flex flex-col flex-wrap">
+                    <img src={pkg.image} alt="img" className="w-64 h-72 bg-contain rounded-md relative z-0 object-cover"/>
+                    <h1 className="absolute font-bold z-10 text-white text-xl px-4 py-2 rounded bottom-2">Package</h1>
+                  </div>
+                </Link>
+              </div>
+            )
+          })}
+        </div>
+
       </div>
 
-      <div className="p-6 pt-10 flex flex-wrap justify-between">
-        {DummyData.map((item) => {
+      <div className="w-full">
+        <div>
+          <h1 className="font-bold p-6 text-xl">Packages for You!</h1>
+        </div>
+        <div className="grid grid-cols-4 justify-evenly gap-4 p-6">
+        {currentPost.map((pkg) => {
+          console.log(currentPost);
           return(
-            <div key={item.id} className="rounded-md shadow-md h-auto pt-5">
-              <a
-              href="#">
-                <img src={item.image} className="object-cover rounded-md h-32 w-64"/>
-                <div className="flex flex-row justify-between p-5">
-                  <h1>{item.name}</h1>
-                  <h1 className="font-light">{item.price}</h1>
+          <div key={pkg.id} className="rounded-md shadow-md pt-5 w-64 h-72 bg-gray-50">
+            <Link href="#">
+              <div className="justify-center flex flex-col mt-6 items-center p-5 flex-wrap">
+                <h1 className="font-extrabold text-2xl pt-12">{pkg.title}</h1>
+                <h1 className="font-bold pt-10">$<span className="font-light">{pkg.prices}</span></h1>
+                <div className="justify-between flex w-full p-6">
+                  <Link href={`/pages/packages#${pkg.id}`} className="text-white bg-indigo-600 p-1 justify-center flex rounded-xl w-20 hover:bg-indigo-800">Book</Link>
+                  <Link href={`/pages/packages#${pkg.id}`} className="text-gray-800 border border-black p-1 flex justify-center rounded-xl text-sm w-20">See More</Link>
                 </div>
-              </a>
-              
-            </div>
+              </div>
+            </Link>
+          </div>
           )
         })}
       </div>
-      
-      <div>
-        
+        <Pagination
+          totalPosts={data.length} 
+          postsPerPage={postsPerPage}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}/>
       </div>
+
+      
     </main>
   );
 }

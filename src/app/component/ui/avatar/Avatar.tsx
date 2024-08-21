@@ -1,5 +1,5 @@
 'use server'
-import { auth, signOut } from "../../../../auth";
+import { auth, signOut } from "../../../../../auth";
 import { handleSignIn, handleSignOut } from "@/app/lib/useAuth";
 
 export default async function Avatar({session} : any) {

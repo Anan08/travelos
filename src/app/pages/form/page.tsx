@@ -1,5 +1,5 @@
-import Form from '@/app/component/ui/Form'
-import Header from '@/app/component/ui/NavBar'
+import Form from '@/app/component/ui/Form/Form'
+import Header from '@/app/component/ui/Navbar/NavBar'
 import React from 'react'
 
 export default function forms() {

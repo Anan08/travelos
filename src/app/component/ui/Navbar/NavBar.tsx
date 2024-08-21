@@ -6,34 +6,22 @@ import { useState } from 'react'
 
 
 import {
-  Menu,
-  MenuItem,
-  MenuButton,
-  MenuItems,
   Popover,
   PopoverButton,
   PopoverGroup,
   PopoverPanel,
 } from '@headlessui/react'
 import {
-  ArrowPathIcon,
-  Bars3Icon,
-  ChartPieIcon,
-  CursorArrowRaysIcon,
-  FingerPrintIcon,
-  SquaresPlusIcon,
-  XMarkIcon,
+  PaperAirplaneIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid';
-import Avatar from './Avatar';
-import signout from '@/app/lib/signout'
+import Avatar from '../avatar/Avatar';
+import Image from 'next/image'
 // import Avatar from './Avatar'
 
 const products = [
-  { name: 'Flight', description: 'Get cheapest flights ticket', types: 'flight', icon: ChartPieIcon },
-  { name: 'Train', description: 'Easy train ticket to get', types: 'train', icon: CursorArrowRaysIcon },
-  { name: 'Bus', description: 'Travel with bus become easier', types: 'bus', icon: FingerPrintIcon },
-  { name: 'Hotel', description: 'Cut your time searching for hotels', types: 'hotel', icon: SquaresPlusIcon },
+  { name: 'Package', description: 'Choose package to buy', types: 'package', icon: PaperAirplaneIcon },
+  { name: 'Hotel', description: 'Cut your time searching for hotels', types: 'hotel', icon: PaperAirplaneIcon },
 ]
 const callsToAction = [
   { name: 'Watch demo', href: '#', icon: PlayCircleIcon },
@@ -52,7 +40,7 @@ export default function Header() {
   const [dropdown, setDropdown] = useState(false);
 
   return (
-        <header className="bg-white sticky top-0 h-32">
+        <header className="bg-white sticky top-0 h-20 z-10">
           <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
             <div className="flex lg:flex-1">
               <Link href={'/'} className="-m-1.5 p-1.5">
@@ -101,9 +89,16 @@ export default function Header() {
                 Partnership
               </Link>
               {/* if login as admin go to admin dashboard, else go to user dashboard */}
-              <Link href={'/'} className="text-sm font-semibold leading-6 text-gray-900">
-                Profile
-              </Link>
+              {!session.data?.user? (
+                  <Link href={'/pages/dashboard/admin'} className="text-sm font-semibold leading-6 text-gray-900">
+                    Dashboard
+                  </Link>
+              ) : (
+                <Link href={'/pages/dashboard/user'} className="text-sm font-semibold leading-6 text-gray-900">
+                    Dashboard
+                </Link>
+              )}
+
             </PopoverGroup>
             <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                 {/* <form
@@ -128,7 +123,7 @@ export default function Header() {
                         setDropdown(true);
                       }
                     }} className="w-10 h-10 hover:opacity-90 rounded-full">
-                        <img src={session.data.user.image} alt="user img" className='rounded-full' />
+                        <img src={session.data.user.image} width={50} height={50} alt='user img'/>
                     </button>
                     
                 )}

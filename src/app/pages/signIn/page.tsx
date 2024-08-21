@@ -1,4 +1,4 @@
-import Header from '@/app/component/ui/NavBar'
+import Header from '@/app/component/ui/Navbar/NavBar'
 import React from 'react'
 import { signIn } from '../../../../auth'
 
