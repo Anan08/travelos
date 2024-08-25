@@ -40,7 +40,7 @@ export default function Header() {
   const [dropdown, setDropdown] = useState(false);
 
   return (
-        <header className="bg-white sticky top-0 h-20 z-10">
+        <header className="bg-white sticky top-0 h-20 z-20">
           <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
             <div className="flex lg:flex-1">
               <Link href={'/'} className="-m-1.5 p-1.5">
@@ -89,7 +89,7 @@ export default function Header() {
                 Partnership
               </Link>
               {/* if login as admin go to admin dashboard, else go to user dashboard */}
-              {!session.data?.user? (
+              {!session.data?.user ?  (
                   <Link href={'/pages/dashboard/admin'} className="text-sm font-semibold leading-6 text-gray-900">
                     Dashboard
                   </Link>

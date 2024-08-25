@@ -9,26 +9,26 @@ import Pagination from "./component/ui/Pagination/Pagination";
 const DummyData = [
   {
     id: "1",
-    name: "Bali's cottage",
-    desc: "Bali's cottage for rent",
+    name: "package",
+    link: "/pages/packages",
     image: "https://plus.unsplash.com/premium_photo-1669863280566-cffeb0fc13c5?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   },
   {
     id: "2",
-    name: "lorem",
-    desc: "lorem10",
+    name: "Activities",
+    link: "ads",
     image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1773&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   },
   {
     id: "3",
-    name: "lorem",
-    desc: "lorem10",
+    name: "Hotel",
+    link: "safa",
     image: "https://images.unsplash.com/photo-1723883973654-474fd909d3b7?q=80&w=1885&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   },
   {
     id: "4",
     name: "lorem",
-    desc: "lorem10",
+    link: "dfs",
     image: "https://images.unsplash.com/photo-1723910039057-7e6a616b6e86?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   }
 ]
@@ -104,10 +104,10 @@ export default function Home() {
           {DummyData.map((pkg) => {
             return (
               <div key={pkg.id}className="rounded-md shadow-md w-64 h-72 ">
-                <Link href="#">
+                <Link href={pkg.link}>
                   <div className="absolute flex flex-col flex-wrap">
                     <img src={pkg.image} alt="img" className="w-64 h-72 bg-contain rounded-md relative z-0 object-cover"/>
-                    <h1 className="absolute font-bold z-10 text-white text-xl px-4 py-2 rounded bottom-2">Package</h1>
+                    <h1 className="absolute font-bold z-10 text-white text-xl px-4 py-2 rounded bottom-2">{pkg.name}</h1>
                   </div>
                 </Link>
               </div>
@@ -115,36 +115,6 @@ export default function Home() {
           })}
         </div>
 
-      </div>
-
-      <div className="w-full">
-        <div>
-          <h1 className="font-bold p-6 text-xl">Packages for You!</h1>
-        </div>
-        <div className="grid grid-cols-4 justify-evenly gap-4 p-6">
-        {currentPost.map((pkg) => {
-          console.log(currentPost);
-          return(
-          <div key={pkg.id} className="rounded-md shadow-md pt-5 w-64 h-72 bg-gray-50">
-            <Link href="#">
-              <div className="justify-center flex flex-col mt-6 items-center p-5 flex-wrap">
-                <h1 className="font-extrabold text-2xl pt-12">{pkg.title}</h1>
-                <h1 className="font-bold pt-10">$<span className="font-light">{pkg.prices}</span></h1>
-                <div className="justify-between flex w-full p-6">
-                  <Link href={`/pages/packages#${pkg.id}`} className="text-white bg-indigo-600 p-1 justify-center flex rounded-xl w-20 hover:bg-indigo-800">Book</Link>
-                  <Link href={`/pages/packages#${pkg.id}`} className="text-gray-800 border border-black p-1 flex justify-center rounded-xl text-sm w-20">See More</Link>
-                </div>
-              </div>
-            </Link>
-          </div>
-          )
-        })}
-      </div>
-        <Pagination
-          totalPosts={data.length} 
-          postsPerPage={postsPerPage}
-          setCurrentPage={setCurrentPage}
-          currentPage={currentPage}/>
       </div>
 
       

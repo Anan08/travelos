@@ -1,9 +1,22 @@
+import { profile } from "console"
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
-import Twitter from "next-auth/providers/twitter"
-import Credentials from "next-auth/providers/credentials"
-
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
-  providers: [Google, Twitter],
+  providers: [Google({
+    profile(profile) {
+      console.log("Profile Google : ",profile)
+
+      let userRole = "user"
+      if(profile?.email == "anandapgt@gmail.com") {
+        userRole = "admin"
+      }
+      console.log("updated profile : ",profile)
+      
+      return {
+        ...profile,
+        role : userRole,
+      };
+    }
+  })]
 })

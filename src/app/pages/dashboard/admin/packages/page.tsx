@@ -11,17 +11,30 @@ interface dataProps {
 }
 
 
-const EditModal = ({ packageData, onClose, onSave }: { packageData: dataProps, onClose: () => void, onSave : () => void}) => {
-  const [formData, setFormData] = useState(packageData);
+const EditModal = ({ data, onClose }: { data: dataProps, onClose: () => void}) => {
+  const id = data.id
+  const [title, setTitle] = useState(data.title);
+  const [desc, setDesc] = useState(data.desc);
+  const [prices, setPrices] = useState(data.prices);
 
-
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
 
   const handleSave = () => {
-    onSave();
+    if (confirm('save change?')) {
+      fetch(`/api/package`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }, body: JSON.stringify({
+          id,
+          title,
+          desc,
+          prices
+        })
+      })
+      alert ('Item successfully Changed')
+    } else {
+      return alert('Operation cancelled')
+    }
     onClose();
   };
 
@@ -34,8 +47,8 @@ const EditModal = ({ packageData, onClose, onSave }: { packageData: dataProps, o
           <input
             type="text"
             name="title"
-            value={formData.title}
-            onChange={handleChange}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             className="w-full mt-1 p-2 border rounded"
           />
         </label>
@@ -43,8 +56,8 @@ const EditModal = ({ packageData, onClose, onSave }: { packageData: dataProps, o
           Description:
           <textarea
             name="desc"
-            value={formData.desc}
-            onChange={handleChange}
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
             className="w-full mt-1 p-2 border rounded"
           />
         </label>
@@ -53,8 +66,8 @@ const EditModal = ({ packageData, onClose, onSave }: { packageData: dataProps, o
           <input
             type="number"
             name="prices"
-            value={formData.prices}
-            onChange={handleChange}
+            value={prices}
+            onChange={(e) => setPrices(Number(e.target.value))}
             className="w-full mt-1 p-2 border rounded"
           />
         </label>
@@ -76,9 +89,6 @@ export default function Page() {
   const [packages, setPackages] = useState<dataProps[]>([]);
   const [modal, setModal] = useState(false)
   const [selectedPackage, setSelectedPackage] = useState<dataProps | null | undefined>(null)
-  const [title, setTitle] = useState();
-  const [desc, setDesc] = useState();
-  const [price, setPrice] = useState();
 
 
   useEffect(() => {
@@ -117,9 +127,8 @@ export default function Page() {
     <div>
       {modal && selectedPackage && (
         <EditModal
-          packageData={selectedPackage}
+          data={selectedPackage}
           onClose={() => setModal(false)}
-          onSave={() => {}}
         />
       )}
       <div className="space-y-12">

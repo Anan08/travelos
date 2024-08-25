@@ -1,5 +1,4 @@
 import { prisma } from "@/utils/prisma"
-import { NextResponse } from "next/server";
 
 export async function POST(req:Request) {
 
@@ -66,28 +65,21 @@ export async function DELETE(req:Request) {
 
 export async function PUT(req:Request) {
     try {
-        const url = new URL(req.url);
-        const id = url.searchParams.get('id')
-        const price = url.searchParams.get('price')
-        const title = url.searchParams.get('title')
-        const desc = url.searchParams.get('desc')
+        const packages = await req.json()
 
-        if (!id) {
-            return Response.json({status : 400, message : 'Package id null'})
-        }
 
         const result = await prisma.packages.update({
             where : {
-                id: id
+                id: packages.id
             }, 
             data : {
-                prices : price as any,
-                title : title as any,
-                desc : desc as any,
+                prices : packages.prices,
+                title : packages.title,
+                desc : packages.desc,
             }
         })
-        console.log()
+        return Response.json(result)
     } catch (error) {
-        
+        return Response.json({status:500, message: error})
     }
 }

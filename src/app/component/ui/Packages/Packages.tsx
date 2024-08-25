@@ -4,6 +4,8 @@ import { CheckIcon } from '@heroicons/react/24/outline'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Pagination from '../Pagination/Pagination'
+import randomIdGenerator from '@/app/lib/randomStringGenerator'
+
 
 const includedFeatures = [
   'Hotels',
@@ -19,30 +21,76 @@ interface dataProps {
   prices:number
 }
 
-const UserBook = ({ title, desc, price, onClose }: { title: string|undefined, desc: string|undefined, price: number|undefined, onClose: () => void }) => {
-  const [quantity, setQuantity] = useState(1);
+const UserBook = ({onClose, data, email} : { onClose :  () => void, data: dataProps | any, email : any})   => {
+  const [amount, setAmount] = useState(1);
+  const mail = email
+  const packageId = data.id;
+  const packageTitle = data.title;
+  const packagePrices = data.prices * amount
+  const code = randomIdGenerator();
+
+  console.log(mail, packageId, packageTitle, packagePrices, code, amount)
+  const saveHandler = () => {
+    if (confirm('save the data?')) {
+        fetch(`/api/bookings`, {
+        method:'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body : JSON.stringify({
+          packageId : packageId,
+          prices : packagePrices,
+          userId : mail,
+          packageName : packageTitle,
+          code : code,
+          amount : amount,
+        })
+      }) 
+      
+      return alert('item successfully saved');
+    } else {
+      return alert('canceled');
+    }
+  }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-8 rounded-md shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4">{title}</h2>
-        <p>{desc}</p>
-        <p className="mt-4 font-bold">Price: ${price}</p>
-        <div className="mt-4">
-          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Quantity</label>
+  <div className="fixed inset-0 z-10 w-screen h-screen flex items-center justify-center bg-gray-800 bg-opacity-75 p-64 mt-16 overflow-scroll">
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-xl mb-4">Package Information</h2>
+        <label className="block mb-2 text-lg font-bold">
+          Title:
+          <p className='text-md font-light p-2'>{data.title}</p>
+        </label>
+        <label className="block mb-2 text-lg font-bold">
+          Description:
+          <p className='text-md font-light p-2'>{data.desc}</p>
+        </label>
+        <label className="block mb-4 text-lg font-bold">
+          Price:
+          <p className='text-md font-light p-2'>${data.prices}</p>
+        </label>
+        <label className="block mb-4 text-lg font-bold">
+          Amount:
           <input
             type="number"
-            id="quantity"
-            value={quantity}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            min="1"
+            name="amount"
+            value={amount}
+            onChange={(e) => {
+              setAmount(Number(e.target.value));
+            }}
+            className="w-full mt-1 p-2 border rounded font-light"
           />
-        </div>
-        <div className="mt-6 flex justify-end space-x-4">
-          <button className="px-4 py-2 bg-gray-500 text-white rounded-md">
-            Cancel
-          </button>
-        </div>
+        </label>
+        <h1>amount : ${data.prices * amount}</h1>
+        <button onClick={() => {
+          saveHandler()
+          onClose()
+          }} className="mr-2 px-4 py-2 bg-blue-500 text-white rounded">
+          Save
+        </button>
+        <button onClick={onClose} className="px-4 py-2 bg-gray-500 text-white rounded">
+          Cancel
+        </button>
       </div>
     </div>
   );
@@ -50,13 +98,12 @@ const UserBook = ({ title, desc, price, onClose }: { title: string|undefined, de
 
 
 export default function Packages() {
-  const router = useRouter();
 
   const session = useSession();
   const [data, setData] = useState<dataProps[]>([]);
   const email = session.data?.user?.email;
   const [modal, setModal] = useState(false)
-  const [selectedPackage, setSelectedPackage] = useState<dataProps | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<dataProps>();
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(4);
   const [quantity, setQuantity] = useState(0);
@@ -64,6 +111,30 @@ export default function Packages() {
   const lastPostIndex = currentPage * postsPerPage;
   const firstPostIndex = lastPostIndex - postsPerPage;
   const currentPost = data.slice(firstPostIndex, lastPostIndex)
+
+  const handleBooking = () => {
+
+    if (session.data == null) {
+      return alert('you need to login')
+    }
+
+    if(confirm('are you sure you want to buy this?')) {
+        setModal(true);
+        
+    } else {
+      return alert('Canceled')
+    }
+
+  }
+
+  const packageSelector = (pkgId : any) => {
+    const selected =  data.find((pkg) => pkg.id === pkgId );
+    if (selected) {
+      setSelectedPackage(selected);
+    } else {
+      return alert('package not found')
+    }
+  }
 
   useEffect(() => {
       
@@ -76,42 +147,14 @@ export default function Packages() {
       })
   }, [])
 
-  const handleBooking = (email: any, selectedPackage : any) => {
-
-    if (session.data == null) {
-      return alert('you need to login')
-    }
-
-    if(confirm('are you sure you want to buy this?')) {
-        setModal(true);
-        fetch(`/api/bookings?uid=${email}&packageId=${selectedPackage.id}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify ({
-            packageId: selectedPackage.id,
-            uid: email,
-          })
-        })
-        alert('succesfully bought the item')
-        router.push('/')
-    } else {
-      return
-    }
-
-    
-    
-  }
-
+  
   console.log(session)
   return (
     <div className=" py-24 sm:py-32">
-      {modal && <UserBook
-      title={selectedPackage?.title}
-      desc={selectedPackage?.desc}
-      price={selectedPackage?.prices}
-      onClose={() => setModal(false)}/>}
+      {modal && <UserBook 
+      onClose={() => setModal(false)}
+      data={selectedPackage}
+      email={email}/>}
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl sm:text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Our Travel Packages</h2>
@@ -154,7 +197,10 @@ export default function Packages() {
                       <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">USD</span>
                     </p>
                     <button
-                        onClick={() => handleBooking(email, pkg.id)}
+                        onClick={() => {
+                          packageSelector(pkg.id);
+                          handleBooking()
+                        }}
                         className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                         Bookings

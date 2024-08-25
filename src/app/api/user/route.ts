@@ -1,26 +1,20 @@
 import { prisma } from "@/utils/prisma"
-import { NextResponse } from "next/server"
 
-export async function GET(req: Request){
 
-    // console.log(session.user.email)
+export async function GET(req : Request){
     try {
-        const url = new URL(req.url);
-        const userId = url.searchParams.get('uid');
+        const { searchParams } = new URL(req.url);
+        const userId = searchParams.get('userId');
 
-        if (!userId) {
-            return NextResponse.json({status: 400, message: 'user ID not found'})
-        }
-
-        await prisma.packageTransaction.findMany({
+        const result =  await prisma.packageTransaction.findMany({
             where: {
-                userId: userId
+                userId : userId as any
             }
         });
 
-        return NextResponse.json({status:200, message: 'success'})
+        return Response.json(result)
     } catch (error) {
-        return NextResponse.json({status:500, message: error});
+        return Response.json({status:500, message: error});
     }
 }
 

@@ -1,33 +1,24 @@
 import { prisma } from "@/utils/prisma"
 
-export async function POST(req:Request, res: Response) {
+
+export async function POST(req:Request) {
 
     try {
-
-        const url = new URL(req.url);
-        const id = url.searchParams.get('uid');
-        if (id == "undefined") {
-            return Response.json({status:400, message:"unable to book, login first"})
-                
-        }
-
-        const packageId = url.searchParams.get('packageId');
-        
-        if(!packageId || !id) {
-            return Response.json({status:400, message:'couldnt find data given'})
-        }
-
+        const data = await req.json()
         const result = await prisma.packageTransaction.create({
             data: {
-                userId:id,
-                packageId:packageId
+                userId: data.userId,
+                packageId: data.packageId,
+                packageName: data.packageName,
+                amount: data.amount,
+                prices: data.prices,
+                status: 'unverified',
+                code: data.code
             }
         })
         return Response.json({status:200, message:result})        
 
     } catch (error) {
         return Response.json({status:500, message: error})
-    }
-
-    
+    }   
 }

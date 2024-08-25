@@ -1,9 +1,7 @@
 import { prisma } from "@/utils/prisma"
-import { revalidatePath } from "next/cache"
 
-export async function GET(req: Request, res: Response){
+export async function GET(){
 
-    // console.log(session.user.email)
     try {
         const result = await prisma.packages.findMany({
             select: {

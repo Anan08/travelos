@@ -43,6 +43,7 @@ model PackageTransaction {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   userId String 
   packageId String 
+  packageName String 
   amount Int
   prices Int
   status String

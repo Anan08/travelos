@@ -1,41 +1,48 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import QRCode from 'qrcode.react';
 
-interface userBookProps {
-  id: string,
-  packageId: string,
-  userId: string,
+interface PackageTransaction {
+  id: string;
+  userId: string;
+  packageId: string;
+  packageName: string;
+  amount: number;
+  prices: number;
+  status: string;
+  code: string;
 }
 
-export default function page() {
+export default function Page() {
   const session = useSession();
   const email = session.data?.user?.email
-  const [userBook, setUserBook] = useState<userBookProps[]>([])
+  const [userBook, setUserBook] = useState<PackageTransaction[]>([])
+  const [modal, setModal] = useState(false)
+  const [selectedCode, setSelectedCode] = useState<string | null>(null)
 
+  console.log(email)
   useEffect(() => {
-    fetch(`/api/user?uid=${email}`,{
-      method: 'GET'
-    }).then((response) => {
-      return response.json()
-    }).then((data) => {
-      if(Array.isArray(data)) {
-        setUserBook(data)
-      } else {
-        setUserBook([]);
-      }
-    })
-  }, []);
+    if (email) {
+      fetch(`/api/user?userId=${email}`,{
+        method: 'GET',
+      }).then((response) => {
+        return response.json()
+      }).then((data) => {
+          setUserBook(data)
+      })
+    }
+  }, [email]);
+  console.log(userBook)
 
+  const handleQRCode = (bookCode : string ) => {
+    return(
+      <div className='z-10 p-10'>
+        <QRCode 
+        value={bookCode}/>
+      </div>
+  )}
 
-  
-  const handleEdit = (id: string) => {
-    return id;
-  };
-
-  const handleDelete = (id: string) => {
-    return id;
-  };
   return (
     <div>
       <div className="space-y-12">
@@ -50,30 +57,28 @@ export default function page() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-blue-500 text-white">
-                  <th className="py-2 px-4 text-left">Id</th>
-                  <th className="py-2 px-4 text-left">Package Id</th>
-                  <th className="py-2 px-4 text-left">Actions</th>
+                  <th className="py-2 px-4 text-left">Name</th>
+                  <th className="py-2 px-4 text-left">Amount</th>
+                  <th className="py-2 px-4 text-left">Price</th>
+                  <th className="py-2 px-4 text-left">Status</th>
+                  <th className="py-2 px-4 text-left">QR</th>
                 </tr>
               </thead>
               <tbody>
-                {userBook.map((pkg) => (
-                  <tr key={pkg.id} className="border-t border-gray-200">
-                    <td className="py-2 px-4">{pkg.id}</td>
-                    <td className="py-2 px-4">${pkg.userId}</td>
-                    <td className="py-2 px-4">
-                      <button
-                        className="mr-2 px-2 py-1 text-sm text-blue-600 border border-blue-600 rounded"
-                        onClick={() => handleEdit(pkg.id)}
-                      >
-                        Edit
+                {userBook.map((book) => (
+                  <tr key={book.id} className="border-t border-gray-200">
+                    <td className="py-2 px-4">{book.packageName}</td>
+                    <td className="py-2 px-4">{book.amount}</td>
+                    <td className="py-2 px-4">${book.prices}</td>
+                    <td className="py-2 px-4">{book.status}</td>
+                    <td className="py-2 px-4">{
+                      book.status === 'verified' ? (
+                      <button 
+                      className="px-2 py-1 text-sm text-blue-600 border border-blue-600 rounded"
+                      onClick={() => {handleQRCode(book.code)}}>
+                        Show QR
                       </button>
-                      <button
-                        className="px-2 py-1 text-sm text-red-600 border border-red-600 rounded"
-                        onClick={() => handleDelete(pkg.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
+                    ) : (<span>Not Verified</span>) }</td>
                   </tr>
                 ))}
               </tbody>

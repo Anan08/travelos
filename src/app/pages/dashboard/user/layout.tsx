@@ -9,13 +9,9 @@ export default function layout({children} : {
     children:React.ReactNode
 }) {
 
-    const router = useRouter()
-
     const signOutHandler = () => {
         if (confirm('sign out?')) {
             handleSignOut()
-            router.refresh()
-            router.push('/')
         } else {
             return
         }
