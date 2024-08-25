@@ -147,8 +147,6 @@ export default function Packages() {
       })
   }, [])
 
-  
-  console.log(session)
   return (
     <div className=" py-24 sm:py-32">
       {modal && <UserBook 

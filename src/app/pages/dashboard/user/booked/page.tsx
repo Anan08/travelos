@@ -14,6 +14,23 @@ interface PackageTransaction {
   code: string;
 }
 
+export const ModalQR = ( {bookCode, onClose}:{bookCode : any, onClose : () => void} ) => {
+  return(
+    <div className="z-10 p-10 fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-6 rounded justify-center items-center flex">
+        <QRCode value={bookCode} size={248} />
+        <button
+          onClick={onClose}
+          className="m-10 text-white p-6 w-36 h-12 justify-center items-center pb-12 bg-blue-600 rounded "
+        >
+          Close QR
+        </button>
+      </div>
+    </div>
+)
+
+}
+
 export default function Page() {
   const session = useSession();
   const email = session.data?.user?.email
@@ -36,15 +53,18 @@ export default function Page() {
   console.log(userBook)
 
   const handleQRCode = (bookCode : string ) => {
-    return(
-      <div className='z-10 p-10'>
-        <QRCode 
-        value={bookCode}/>
-      </div>
-  )}
+    setModal(true)
+    setSelectedCode(bookCode)
+}
+
 
   return (
     <div>
+      {modal && <ModalQR
+      bookCode={selectedCode}
+      onClose = {() => setModal(false)}
+      
+      />}
       <div className="space-y-12">
         <div className="border-b border-gray-900/10 pb-12">
           <h2 className="text-base font-semibold leading-7 text-gray-900">Package List</h2>
@@ -70,7 +90,11 @@ export default function Page() {
                     <td className="py-2 px-4">{book.packageName}</td>
                     <td className="py-2 px-4">{book.amount}</td>
                     <td className="py-2 px-4">${book.prices}</td>
-                    <td className="py-2 px-4">{book.status}</td>
+                    <td className="py-2 px-4">
+                      <span className={`${book.status === 'verified' ? 'text-green-500' : 'text-red-500'}`}>
+                        {book.status}
+                      </span>
+                    </td>
                     <td className="py-2 px-4">{
                       book.status === 'verified' ? (
                       <button 

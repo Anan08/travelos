@@ -1,9 +1,5 @@
-'use client'
-import Link from 'next/link'
-import { SessionProvider, useSession } from 'next-auth/react'
-import { handleSignIn, handleSignOut } from '@/app/lib/useAuth'
-import { useState } from 'react'
-
+import Link from 'next/link';
+import { auth, signIn, signOut } from '../../../../../auth';
 
 import {
   Popover,
@@ -15,8 +11,6 @@ import {
   PaperAirplaneIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid';
-import Avatar from '../avatar/Avatar';
-import Image from 'next/image'
 // import Avatar from './Avatar'
 
 const products = [
@@ -28,16 +22,10 @@ const callsToAction = [
   { name: 'Contact sales', href: '#', icon: PhoneIcon },
 ]
 
-const mockSession = {
-  id:'1',
-  profile: 'foo',
-  image: 'https://images.unsplash.com/photo-1505033575518-a36ea2ef75ae?q=80&w=1886&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-}
-
-export default function Header() { 
-  const session = useSession();
-  console.log(session);
-  const [dropdown, setDropdown] = useState(false);
+export default async function Header() { 
+  const session = await auth()
+  let dropdown = false;
+  console.log(session)
 
   return (
         <header className="bg-white sticky top-0 h-20 z-20">
@@ -89,7 +77,7 @@ export default function Header() {
                 Partnership
               </Link>
               {/* if login as admin go to admin dashboard, else go to user dashboard */}
-              {!session.data?.user ?  (
+              {!session?.user  ?   (
                   <Link href={'/pages/dashboard/admin'} className="text-sm font-semibold leading-6 text-gray-900">
                     Dashboard
                   </Link>
@@ -108,34 +96,27 @@ export default function Header() {
                       </button>
                   </form> */}
 
-                {!session.data?.user? (
-                  <form
-                    action={handleSignIn}>
-                      <button type="submit" className="w-32 text-sm font-semibold rounded-md text-white shadow-sm px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                        Sign in
-                      </button>
-                  </form>
+                {!session?.user? (
+                  // <form
+                  //   action={async() => {
+                  //     "use server"
+                  //     await signIn()
+                  //   }}>
+                  //     <button type="submit" className="w-32 text-sm font-semibold rounded-md text-white shadow-sm px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                  //       Sign in
+                  //     </button>
+                  // </form>
+                  <Link href='/pages/signIn' className='className="w-32 text-sm font-semibold rounded-md text-white shadow-sm px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"'> Sign In</Link>
                 ) : (
-                    <button onClick={() => {
-                      if(dropdown == true) {
-                        setDropdown(false);
-                      } else {
-                        setDropdown(true);
-                      }
-                    }} className="w-10 h-10 hover:opacity-90 rounded-full">
-                        <img src={session.data.user.image} width={50} height={50} alt='user img'/>
+                  <form
+                  action={async() => {
+                    "use server"
+                    await signOut()
+                  }}>
+                    <button type="submit" className="w-32 text-sm font-semibold rounded-md text-white shadow-sm px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                      Sign Out
                     </button>
-                    
-                )}
-
-                {dropdown && (
-                  <div>
-                    <form action={handleSignOut}>
-                      <button type='submit' className='absolute top-20 right-5 text-sm bg-gray-100 p-1 w-15 shadow-md'>
-                        Sign Out
-                      </button>
-                    </form>
-                  </div>
+                </form>
                 )}
             </div>
           </nav>

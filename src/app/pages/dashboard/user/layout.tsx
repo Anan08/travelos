@@ -1,21 +1,13 @@
-'use client'
 import React, { ReactNode } from 'react'
 import Link from 'next/link'
-import { signOut } from '../../../../../auth'
-import { handleSignOut } from '@/app/lib/useAuth'
-import { redirect, useRouter } from 'next/navigation'
+import { signOut, auth } from '../../../../../auth'
 
-export default function layout({children} : {
+export default async function layout({children} : {
     children:React.ReactNode
 }) {
+    const session = await auth()
+    console.log(session)
 
-    const signOutHandler = () => {
-        if (confirm('sign out?')) {
-            handleSignOut()
-        } else {
-            return
-        }
-    }
   return (
     <div>
         <div className="flex h-screen">
@@ -28,7 +20,12 @@ export default function layout({children} : {
                     <Link href="/pages/dashboard/user/about" className="text-white hover:text-gray-400">About</Link>
                 </li>
                 <li className="p-4">
-                    <button onClick={signOutHandler} className="text-white hover:text-gray-400">Sign Out</button>
+                    <form onSubmit={async() => {
+                        "use server"
+                        await signOut()
+                    }}>
+                        <button type='submit' className="text-white hover:text-gray-400">Sign Out</button>
+                    </form>
                 </li>
                 </ul>
             </aside>

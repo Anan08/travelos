@@ -52,6 +52,8 @@ export default function Home() {
   const lastPostIndex = currentPage * postsPerPage;
   const firstPostIndex = lastPostIndex - postsPerPage;
   const currentPost = data.slice(firstPostIndex, lastPostIndex)
+  console.log(session)
+
 
   useEffect(() => {
       

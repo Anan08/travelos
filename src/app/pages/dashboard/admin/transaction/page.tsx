@@ -37,21 +37,24 @@ export default function Page() {
       )
   }, [])
 
-  const handleDelete = (id : string) => {
-    if (confirm('delete the item?')) {
-        fetch(`/api/package?id=${id}`, {
-          method: 'DELETE'
-      })
-      alert('successfully deleted the item')
-      router.push('/pages/dashboard/admin/packages')
-      
-    } else {
-      return
-    }
-    
-  };
 
-  const handleStatusChange = (id : string, newStatus : string) => {
+  const handleStatusChange = (id : string, status : string) => {
+    try {
+      
+      fetch('/api/admin', {
+        method : 'PUT',
+        headers : {
+          'Content-Type': 'application/json'
+        },
+        body : JSON.stringify({
+          id : id,
+          status : status, 
+        })
+      })
+      return alert('status changed!')
+    } catch (error) {
+      console.log("error changing status : ", error);
+    }
   };
 
 
@@ -90,7 +93,7 @@ export default function Page() {
                     <td className="py-2 px-4">
                       <select
                         value={transaction.status}
-                        onChange={(e) => {}}
+                        onChange={(e) => {handleStatusChange(transaction.id, e.target.value)}}
                         className="border rounded px-2 py-1"
                       >
                         <option value="unverified">Unverified</option>

@@ -1,35 +1,27 @@
-'use client'
-import React from 'react';
-import { signIn } from 'next-auth/react'; // Import from next-auth/react
-import { useRouter } from 'next/navigation';
+import Header from '@/app/component/ui/Navbar/NavBar'
+import React from 'react'
+import { signIn } from '../../../../auth'
+import Link from 'next/link'
 
-export default function Login() {
-  const router = useRouter()
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
-    try {
-      await signIn('credentials', { email, password, redirect : false });
-      router.push('/')
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+export default function Register() {
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Sign in to your account
+            Sign up to your account
           </h2>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form action={async(formData) => {
+            'use server'
+            try {
+              await signIn("credentials", formData)
+            } catch (error) {
+              return error
+            }
+          }} method="POST" className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
@@ -78,31 +70,33 @@ export default function Login() {
             </div>
           </form>
 
-          <div className="mt-5 text-center text-sm text-gray-500 flex justify-center">
-            <p className="flex items-center justify-center">or try with another method:</p>
+          <div className="mt-5 text-center text-sm text-gray-500 flex justify-center ">
+            <p className="flex items-center justify-center">or try with another method : </p>
             <div>
-              <button
-                onClick={() => signIn('google', { redirectTo: '/' })}
-                className="mx-2 hover:translate-y-[-8px]"
-              >
-                <img
-                  src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000"
-                  width={20}
-                  height={20}
-                  alt="Google sign-in"
-                />
-              </button>
+              <form action={async() => {
+                  'use server'
+                  await signIn('google', {redirectTo: '/'})
+                }}>
+                <button type='submit'
+                  className='mx-2 hover:translate-y-[-8px]'>
+                    <img
+                      src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000"
+                      width={20}
+                      height={20}
+                    />
+                </button>
+              </form>
             </div>
           </div>
 
           <p className="mt-10 text-center text-sm text-gray-500">
-            Not a member?{' '}
-            <a href="/pages/signUp" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-              Sign Up
-            </a>
+            Have an Account?{' '}
+            <Link href="/pages/SignIn" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+              Sign In
+            </Link>
           </p>
         </div>
       </div>
     </>
-  );
+  )
 }
